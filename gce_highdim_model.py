@@ -67,12 +67,30 @@ isotropic_error, bubble_error = jnp.load(work_dir +'external_errors.npy') #the d
 #here is the model prediction in a single energy bin given a list of theta = log10(normalizations)
 def jmodel_masked(theta, bin_no, ex_num=1):
     """
-    0 corresponds to no excess
-    1 corresponds to DM
-    2 is the boxy bulge
-    3 is the x-shaped bulge
-    4 is the 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
-    5 allows both the boxy bulge and the x-shaped bulge to be free independently
+    function that returns a predicted (masked) model of the gamma-ray sky
+    
+    Parameters
+    ----------
+    theta: vector
+        log10 of the normalizations of the different emission components
+        the first 18 are the astrophysical rings of Pohl et al.
+    
+    bin_no: int
+        the energy bin number
+    
+    ex_num: int
+        a way of selecting the excess to add to the astrophysical rings
+        0 corresponds to no excess
+        1 corresponds to DM
+        2 is the boxy bulge
+        3 is the x-shaped bulge
+        4 is the 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
+        5 allows both the boxy bulge and the x-shaped bulge to be free independently
+    
+    Returns
+    -------
+    vector
+        a 160,000-entry vector (including the appropriate mask) that can be compared to data
     """
     if ex_num==1:#DM
         out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([HI_ring1_20x20[bin_no], HI_ring2_20x20[bin_no], HI_ring3_20x20[bin_no], HI_ring4_20x20[bin_no], H2_ring1_20x20[bin_no], H2_ring2_20x20[bin_no], H2_ring3_20x20[bin_no],H2_ring4_20x20[bin_no], posres_20x20[bin_no],negres_20x20[bin_no], ics_ring1A_20x20[bin_no], ics_ring1B_20x20[bin_no], ics_ring1C_20x20[bin_no], ics_ring2_20x20[bin_no], ics_ring3_20x20[bin_no], ics_ring4_20x20[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], dm_20x20[bin_no]]))
@@ -92,6 +110,19 @@ jjmodel_masked = jit(jmodel_masked, static_argnums=(1,2))
 
 #masked data
 def jdata_masked(bin_no):
+    """
+    function that returns the masked data of the gamma-ray sky
+    
+    Parameters
+    ----------
+    bin_no: int
+        the energy bin number
+    
+    Returns
+    -------
+    vector
+        a 160,000-entry vector (including the appropriate mask) to which a model can be compared
+    """
     return jnp.asarray(fermi_front_20x20)[bin_no]*jnp.asarray(mask_20x20)[bin_no]
 jjdata_masked = jit(jdata_masked, static_argnums=(0,))
 
@@ -99,9 +130,30 @@ jjdata_masked = jit(jdata_masked, static_argnums=(0,))
 #the log of the Poisson likelihood plus the "external chi^2" terms
 def jlnlike(theta, bin_no=0, ex_num=1):
     """
-    This function assumes that the parameters theta are unconstrained.
-    The LL already contains a "pull" term that enforces a prior on the Bubbles and isotropic normalization.
-    ex_num is defined in jmodel_masked: 0=no excess, 1=dm, 2=bb, 3=x, 4=bb+, 5=b&x
+    function that returns a log-likelihood that the data is described by a model of the gamma-ray sky
+    
+    Parameters
+    ----------
+    theta: vector
+        log10 of the normalizations of the different emission components
+        the first 18 are the astrophysical rings of Pohl et al.
+    
+    bin_no: int
+        the energy bin number
+    
+    ex_num: int
+        a way of selecting the excess to add to the astrophysical rings
+        0 corresponds to no excess
+        1 corresponds to DM
+        2 is the boxy bulge
+        3 is the x-shaped bulge
+        4 is the 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
+        5 allows both the boxy bulge and the x-shaped bulge to be free independently
+    
+    Returns
+    -------
+    float
+        the log-likelihood _from the constrained space_ that the data is described by a model of the gamma-ray sky
     """
     bubble_norm, isotropic_norm = 10**theta[16], 10**theta[17]
     
@@ -123,15 +175,50 @@ pmax = jnp.asarray([10.,10.,10.,10.,10.,10.,10.,10.,4.,4.,10.,10.,10.,10.,10.,10
 #returns the negative of the machine-precision-large number if we find ourselves outside of the prior range
 #this is only necessary for samplers that work in the unconstrained space, which is true of numpyro
 def jlnprior(theta):
+    """
+    function that returns a big negative number if you violate the priors
+    
+    Parameters
+    ----------
+    theta: vector
+        log10 of the normalizations of the different emission components
+        the first 18 are the astrophysical rings of Pohl et al.
+    
+    Returns
+    -------
+    float
+        zero if you respect the priors, or a big negative number if you violate the priors
+    """
     return -(1-jnp.prod(theta>pmin[:len(theta)])*jnp.prod(theta<pmax[:len(theta)]))*EMAX
 jjlnprior = jit(jlnprior)
 
 #the sum of the prior-enforcing function and the log likelihood
 def jlnprob(theta, bin_no=0, ex_num=1):
     """
-    This function already includes the "pull" term that enforces a prior on the Bubbles and isotropic normalization, via jlnlike
-    On top of this, we also have included some flat priors for each of the parameters _by hand_ (by artificially making the LL machine-precision large and negative if you violate the priors)
-    ex_num is defined in jmodel_masked: 0=no excess, 1=dm, 2=bb, 3=x, 4=bb+, 5=b&x
+    function that returns a log-likelihood that the data is described by a model of the gamma-ray sky
+    
+    Parameters
+    ----------
+    theta: vector
+        log10 of the normalizations of the different emission components
+        the first 18 are the astrophysical rings of Pohl et al.
+    
+    bin_no: int
+        the energy bin number
+    
+    ex_num: int
+        a way of selecting the excess to add to the astrophysical rings
+        0 corresponds to no excess
+        1 corresponds to DM
+        2 is the boxy bulge
+        3 is the x-shaped bulge
+        4 is the 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
+        5 allows both the boxy bulge and the x-shaped bulge to be free independently
+    
+    Returns
+    -------
+    float
+        the log-likelihood _from the UNconstrained space_ that the data is described by a model of the gamma-ray sky
     """
     lp = jjlnprior(theta)
     return lp + jjlnlike(theta, bin_no, ex_num)
