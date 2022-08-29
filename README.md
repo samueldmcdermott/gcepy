@@ -1,5 +1,5 @@
-# gce
-Code for high-dimensional sampling for testing models of the Galactic center excess (GCE).
+# gcepy
+Code for sampling for testing models of the Galactic center excess (GCE).
 
 This code relies on jax for all basic definitions, building up to a log-likelihood for the model given the data.
 The repository provides an ipynb demonstrating how to use two high-dimensional samplers, dynesty and numpyro, to derive constraints on the parameters.
