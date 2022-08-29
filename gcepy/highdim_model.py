@@ -34,7 +34,7 @@ isotropic_20x20 = jnp.load(utils_dir + 'isotropic' + suffix).reshape(num_ebins, 
 isotropic_error, bubble_error = jnp.load(utils_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
 
 
-#the next 18 lines give the 16 ring-based templates and two additional background templates
+#the next 16 lines give the 16 ring-based templates from Pohl et al
 HI_ring1_20x20 = jnp.load(templates_dir + 'HI_ring1' + suffix).reshape(num_ebins, -1)
 HI_ring2_20x20 = jnp.load(templates_dir + 'HI_ring2' + suffix).reshape(num_ebins, -1)
 HI_ring3_20x20 = jnp.load(templates_dir + 'HI_ring3' + suffix).reshape(num_ebins, -1)
