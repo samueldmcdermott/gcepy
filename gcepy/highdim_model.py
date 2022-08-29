@@ -15,6 +15,7 @@ import jax.scipy.special as jsc
 EPS = jnp.finfo(jnp.float32).eps #smallest machine-precision value
 EMAX = jnp.finfo(jnp.float32).max #largest machine-precision value
 
+num_ebins = 14 #we use 14 energy bins
 
 utils_dir = 'inputs/utils/' #location of your data, mask, etc
 templates_dir = 'inputs/templates_highdim/' #location of your model templates
@@ -22,13 +23,12 @@ excesses_dir = 'inputs/excesses/' #location of your excess templates
 
 suffix = '_front_only_14_Ebin_20x20window_normal.npy' #this is convenient in case you have any other labels attached to the models
 
-fermi_front_20x20 = jnp.load(utils + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
+fermi_front_20x20 = jnp.load(utils_dir + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
 mask_20x20 = jnp.load(utils_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
 bubble_20x20 = jnp.load(utils_dir + 'bubble' + suffix).reshape(num_ebins, -1)
 isotropic_20x20 = jnp.load(utils_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
 isotropic_error, bubble_error = jnp.load(utils_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
 
-num_ebins = 14 #we use 14 energy bins
 
 #the next 18 lines give the 16 ring-based templates and two additional background templates
 HI_ring1_20x20 = jnp.load(templates_dir + 'HI_ring1' + suffix).reshape(num_ebins, -1)

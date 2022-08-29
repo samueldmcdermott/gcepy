@@ -15,14 +15,14 @@ import jax.scipy.special as jsc
 EPS = jnp.finfo(jnp.float32).eps #smallest machine-precision value
 EMAX = jnp.finfo(jnp.float32).max #largest machine-precision value
 
+num_ebins = 14 #we use 14 energy bins
+
 
 utils_dir = 'inputs/utils/' #location of your data, mask, etc
 templates_dir = 'inputs/templates_lowdim/' #location of your model templates
 excesses_dir = 'inputs/excesses/' #location of your excess templates
 
 suffix = '_front_only_14_Ebin_20x20window_normal.npy' #this is convenient in case you have any other labels attached to the models
-
-num_ebins = 14 #we use 14 energy bins
 
 fermi_front_20x20 = jnp.load(utils_dir + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
 mask_20x20 = jnp.load(utils_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
