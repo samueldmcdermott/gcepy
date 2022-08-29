@@ -11,17 +11,17 @@ from jax import jit
 import jax.numpy as jnp
 import jax.scipy.special as jsc
 import os
-
+gcepydir = os.path.dirname(os.path.abspath(__file__))
 
 EPS = jnp.finfo(jnp.float32).eps #smallest machine-precision value
 EMAX = jnp.finfo(jnp.float32).max #largest machine-precision value
 
 num_ebins = 14 #we use 14 energy bins
 
-gcepydir = os.getcwd()
-utils_dir = gcepydir + 'inputs/utils/' #location of your data, mask, etc
-templates_dir = gcepydir + 'inputs/templates_highdim/' #location of your model templates
-excesses_dir = gcepydir + 'inputs/excesses/' #location of your excess templates
+# gcepydir = os.getcwd()
+utils_dir = gcepydir + '/inputs/utils/' #location of your data, mask, etc
+templates_dir = gcepydir + '/inputs/templates_highdim/' #location of your model templates
+excesses_dir = gcepydir + '/inputs/excesses/' #location of your excess templates
 
 suffix = '_front_only_14_Ebin_20x20window_normal.npy' #this is convenient in case you have any other labels attached to the models
 
