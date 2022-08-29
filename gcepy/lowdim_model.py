@@ -28,9 +28,9 @@ fermi_front_20x20 = jnp.load(utils_dir + 'fermi_w009_to_w670' + suffix).reshape(
 mask_20x20 = jnp.load(utils_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
 
 #the next two lines give the bubbles and isotropic templates
-bubble_20x20 = jnp.load(work_dir + 'bubble' + suffix).reshape(num_ebins, -1)
-isotropic_20x20 = jnp.load(work_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
-isotropic_error, bubble_error = jnp.load(work_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
+bubble_20x20 = jnp.load(utils_dir + 'bubble' + suffix).reshape(num_ebins, -1)
+isotropic_20x20 = jnp.load(utils_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
+isotropic_error, bubble_error = jnp.load(utils_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
 
 #the next six lines give the three astrophysical templates for Models ___ and ___ from ___
 bremss = jnp.load(templates_dir+"bremss_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
