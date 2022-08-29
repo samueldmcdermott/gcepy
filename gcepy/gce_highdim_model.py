@@ -52,7 +52,7 @@ ics_ring4_20x20 = jnp.load(templates_dir + 'ics_ring4' + suffix).reshape(num_ebi
 dm_20x20 = jnp.load(excesses_dir + 'dm' + suffix).reshape(num_ebins, -1) #the emission expected from annihilation of dark matter; we assume it follows a gNFW morphology with gamma=1.2 and has the energy spectrum of a 30 GeV particle annihilating to b \bar{b} (though we fit every energy bin independently)
 bb_20x20 = jnp.load(excesses_dir + 'bb' + suffix).reshape(num_ebins, -1) #the profile of the boxy bulge; this has a power-law energy distribution across bins
 x_20x20 = jnp.load(excesses_dir + 'x' + suffix).reshape(num_ebins, -1) #the profile of the x-shaped bulge; this has a power-law energy distribution across bins
-sb_20x20 = jnp.load(excesses_dir + 'bbp' + suffix).reshape(num_ebins, -1) #the "boxy bulge plus" = the profile of the boxy bulge augmented with the nuclear stellar bulge and nuclear disk; this has a power-law energy distribution across bins
+bbp_20x20 = jnp.load(excesses_dir + 'bbp' + suffix).reshape(num_ebins, -1) #the "boxy bulge plus" = the profile of the boxy bulge augmented with the nuclear stellar bulge and nuclear disk; this has a power-law energy distribution across bins
 
 
 
