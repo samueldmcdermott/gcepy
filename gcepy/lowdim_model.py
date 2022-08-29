@@ -32,7 +32,7 @@ bubble_20x20 = jnp.load(utils_dir + 'bubble' + suffix).reshape(num_ebins, -1)
 isotropic_20x20 = jnp.load(utils_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
 isotropic_error, bubble_error = jnp.load(utils_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
 
-#the next six lines give the three astrophysical templates for Models ___ and ___ from ___
+#the next six lines give the three astrophysical templates for the best fit models with and without an excess from 2112.09706
 bremss = jnp.load(templates_dir+"bremss_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
 pi0 = jnp.load(templates_dir+"pion0_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
 ics = jnp.load(templates_dir+"ics_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
@@ -62,7 +62,7 @@ def jmodel_masked(theta, bin_no, ex_num=1):
     ----------
     theta: vector
         log10 of the normalizations of the different emission components
-        the first 18 are the astrophysical rings of Pohl et al.
+        the first 4 are the best-fit templates of https://arxiv.org/abs/2112.09706 (these are different if there is or is not an excess, which we account for) -- these are identical to the templates at https://zenodo.org/record/6423495 but already in .npy form
     
     bin_no: int
         the energy bin number
@@ -78,7 +78,7 @@ def jmodel_masked(theta, bin_no, ex_num=1):
     
     Returns
     -------
-    vector
+    jnp.array
         a 160,000-entry vector (including the appropriate mask) that can be compared to data
     """
     if ex_num==1:#DM
@@ -109,7 +109,7 @@ def jdata_masked(bin_no):
     
     Returns
     -------
-    vector
+    jnp.array
         a 160,000-entry vector (including the appropriate mask) to which a model can be compared
     """
     return jnp.asarray(fermi_front_20x20)[bin_no]*jnp.asarray(mask_20x20)[bin_no]
