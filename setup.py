@@ -8,5 +8,8 @@ setuptools.setup(
     description="likelihoods and samplers for the Galactic center excess",
     packages=["gcepy"],
     url="https://github.com/samueldmcdermott/gcepy",
-    install_requires=['setuptools',"jax", "dynesty", "numpyro"]
+    install_requires=['setuptools',"jax", "dynesty", "numpyro"],
+    package_data={
+        "gcepy": ["inputs/utils/*.npy", "inputs/templates_lowdim/*.npy","inputs/excesses/*.npy"],
+    }
 )
