@@ -16,41 +16,38 @@ EPS = jnp.finfo(jnp.float32).eps #smallest machine-precision value
 EMAX = jnp.finfo(jnp.float32).max #largest machine-precision value
 
 
-work_dir = '/Users/sammcd00/Dropbox/1recently-completed-papers/46wavelets4_cmsz/wavelets4_and_GCE_templates/YZ_template_fit_2021/20x20_template_October/' #location of your data, models, and masks
+utils_dir = 'inputs/utils/' #location of your data, mask, etc
+templates_dir = 'inputs/templates_lowdim/' #location of your model templates
+excesses_dir = 'inputs/excesses/' #location of your excess templates
+
 suffix = '_front_only_14_Ebin_20x20window_normal.npy' #this is convenient in case you have any other labels attached to the models
 
 num_ebins = 14 #we use 14 energy bins
 
-fermi_front_20x20 = jnp.load(work_dir + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
-
-#the next six lines give the three astrophysical templates for Models ___ and ___ from ___
-bremss = jnp.load(work_dir+"bremss_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
-pi0 = jnp.load(work_dir+"pion0_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
-ics = jnp.load(work_dir+"ics_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
-bremss_nodm = jnp.load(work_dir+"bremss_model_7p_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
-pi0_nodm = jnp.load(work_dir+"pion0_model_7p_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
-ics_nodm = jnp.load(work_dir+"ics_model_7p_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
+fermi_front_20x20 = jnp.load(utils_dir + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
+mask_20x20 = jnp.load(utils_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
 
 #the next two lines give the bubbles and isotropic templates
 bubble_20x20 = jnp.load(work_dir + 'bubble' + suffix).reshape(num_ebins, -1)
 isotropic_20x20 = jnp.load(work_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
-
-
-dm_20x20 = jnp.load(work_dir + 'dm_1' + suffix).reshape(num_ebins, -1) #the emission expected from annihilation of dark matter; we assume it follows a gNFW morphology with gamma=1.2 and has the energy spectrum of a 30 GeV particle annihilating to b \bar{b} (though we fit every energy bin independently)
-
-bb_20x20 = jnp.load(work_dir + 'dm_14' + suffix).reshape(num_ebins, -1) #the profile of the boxy bulge; this has a power-law energy distribution across bins
-
-x_20x20 = jnp.load(work_dir + 'dm_15' + suffix).reshape(num_ebins, -1) #the profile of the x-shaped bulge; this has a power-law energy distribution across bins
-
-sb_20x20 = jnp.load(work_dir + 'dm_64' + suffix).reshape(num_ebins, -1) #the "boxy bulge plus" = the profile of the boxy bulge augmented with the nuclear stellar bulge and nuclear disk; this has a power-law energy distribution across bins
-
-
-
-mask_20x20 = jnp.load(work_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
-
-
-
 isotropic_error, bubble_error = jnp.load(work_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
+
+#the next six lines give the three astrophysical templates for Models ___ and ___ from ___
+bremss = jnp.load(templates_dir+"bremss_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
+pi0 = jnp.load(templates_dir+"pion0_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
+ics = jnp.load(templates_dir+"ics_model_8t_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
+bremss_nodm = jnp.load(templates_dir+"bremss_model_7p_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
+pi0_nodm = jnp.load(templates_dir+"pion0_model_7p_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
+ics_nodm = jnp.load(templates_dir+"ics_model_7p_front_only_14_Ebin_20x20window_normal.npy").reshape(14, -1)
+
+
+
+dm_20x20 = jnp.load(excesses_dir + 'dm' + suffix).reshape(num_ebins, -1) #the emission expected from annihilation of dark matter; we assume it follows a gNFW morphology with gamma=1.2 and has the energy spectrum of a 30 GeV particle annihilating to b \bar{b} (though we fit every energy bin independently)
+bb_20x20 = jnp.load(excesses_dir + 'bb' + suffix).reshape(num_ebins, -1) #the profile of the boxy bulge; this has a power-law energy distribution across bins
+x_20x20 = jnp.load(excesses_dir + 'x' + suffix).reshape(num_ebins, -1) #the profile of the x-shaped bulge; this has a power-law energy distribution across bins
+sb_20x20 = jnp.load(excesses_dir + 'bbp' + suffix).reshape(num_ebins, -1) #the "boxy bulge plus" = the profile of the boxy bulge augmented with the nuclear stellar bulge and nuclear disk; this has a power-law energy distribution across bins
+
+
 
 
 #jax requires arrays to be of fixed size, so we can't for example write a function that starts with the astrophysical background and adds additional templates later

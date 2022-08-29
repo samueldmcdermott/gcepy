@@ -16,49 +16,45 @@ EPS = jnp.finfo(jnp.float32).eps #smallest machine-precision value
 EMAX = jnp.finfo(jnp.float32).max #largest machine-precision value
 
 
-work_dir = '/Users/sammcd00/Dropbox/1recently-completed-papers/46wavelets4_cmsz/wavelets4_and_GCE_templates/YZ_template_fit_2021/20x20_template_Macias/' #location of your data, models, and masks
+utils_dir = 'inputs/utils/' #location of your data, mask, etc
+templates_dir = 'inputs/templates_highdim/' #location of your model templates
+excesses_dir = 'inputs/excesses/' #location of your excess templates
+
 suffix = '_front_only_14_Ebin_20x20window_normal.npy' #this is convenient in case you have any other labels attached to the models
+
+fermi_front_20x20 = jnp.load(utils + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
+mask_20x20 = jnp.load(utils_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
+bubble_20x20 = jnp.load(utils_dir + 'bubble' + suffix).reshape(num_ebins, -1)
+isotropic_20x20 = jnp.load(utils_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
+isotropic_error, bubble_error = jnp.load(utils_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
 
 num_ebins = 14 #we use 14 energy bins
 
-fermi_front_20x20 = jnp.load(work_dir + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
-
 #the next 18 lines give the 16 ring-based templates and two additional background templates
-HI_ring1_20x20 = jnp.load(work_dir + 'HI_ring1' + suffix).reshape(num_ebins, -1)
-HI_ring2_20x20 = jnp.load(work_dir + 'HI_ring2' + suffix).reshape(num_ebins, -1)
-HI_ring3_20x20 = jnp.load(work_dir + 'HI_ring3' + suffix).reshape(num_ebins, -1)
-HI_ring4_20x20 = jnp.load(work_dir + 'HI_ring4' + suffix).reshape(num_ebins, -1)
-H2_ring1_20x20 = jnp.load(work_dir + 'H2_ring1' + suffix).reshape(num_ebins, -1)
-H2_ring2_20x20 = jnp.load(work_dir + 'H2_ring2' + suffix).reshape(num_ebins, -1)
-H2_ring3_20x20 = jnp.load(work_dir + 'H2_ring3' + suffix).reshape(num_ebins, -1)
-H2_ring4_20x20 = jnp.load(work_dir + 'H2_ring4' + suffix).reshape(num_ebins, -1)
-posres_20x20 = jnp.load(work_dir + 'posres' + suffix).reshape(num_ebins, -1)
-negres_20x20 = jnp.load(work_dir + 'negres' + suffix).reshape(num_ebins, -1)
-ics_ring1A_20x20 = jnp.load(work_dir + 'ics_ring1A' + suffix).reshape(num_ebins, -1)
-ics_ring1B_20x20 = jnp.load(work_dir + 'ics_ring1B' + suffix).reshape(num_ebins, -1)
-ics_ring1C_20x20 = jnp.load(work_dir + 'ics_ring1C' + suffix).reshape(num_ebins, -1)
-ics_ring2_20x20 = jnp.load(work_dir + 'ics_ring2' + suffix).reshape(num_ebins, -1)
-ics_ring3_20x20 = jnp.load(work_dir + 'ics_ring3' + suffix).reshape(num_ebins, -1)
-ics_ring4_20x20 = jnp.load(work_dir + 'ics_ring4' + suffix).reshape(num_ebins, -1)
-bubble_20x20 = jnp.load(work_dir + 'bubble' + suffix).reshape(num_ebins, -1)
-isotropic_20x20 = jnp.load(work_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
+HI_ring1_20x20 = jnp.load(templates_dir + 'HI_ring1' + suffix).reshape(num_ebins, -1)
+HI_ring2_20x20 = jnp.load(templates_dir + 'HI_ring2' + suffix).reshape(num_ebins, -1)
+HI_ring3_20x20 = jnp.load(templates_dir + 'HI_ring3' + suffix).reshape(num_ebins, -1)
+HI_ring4_20x20 = jnp.load(templates_dir + 'HI_ring4' + suffix).reshape(num_ebins, -1)
+H2_ring1_20x20 = jnp.load(templates_dir + 'H2_ring1' + suffix).reshape(num_ebins, -1)
+H2_ring2_20x20 = jnp.load(templates_dir + 'H2_ring2' + suffix).reshape(num_ebins, -1)
+H2_ring3_20x20 = jnp.load(templates_dir + 'H2_ring3' + suffix).reshape(num_ebins, -1)
+H2_ring4_20x20 = jnp.load(templates_dir + 'H2_ring4' + suffix).reshape(num_ebins, -1)
+posres_20x20 = jnp.load(templates_dir + 'posres' + suffix).reshape(num_ebins, -1)
+negres_20x20 = jnp.load(templates_dir + 'negres' + suffix).reshape(num_ebins, -1)
+ics_ring1A_20x20 = jnp.load(templates_dir + 'ics_ring1A' + suffix).reshape(num_ebins, -1)
+ics_ring1B_20x20 = jnp.load(templates_dir + 'ics_ring1B' + suffix).reshape(num_ebins, -1)
+ics_ring1C_20x20 = jnp.load(templates_dir + 'ics_ring1C' + suffix).reshape(num_ebins, -1)
+ics_ring2_20x20 = jnp.load(templates_dir + 'ics_ring2' + suffix).reshape(num_ebins, -1)
+ics_ring3_20x20 = jnp.load(templates_dir + 'ics_ring3' + suffix).reshape(num_ebins, -1)
+ics_ring4_20x20 = jnp.load(templates_dir + 'ics_ring4' + suffix).reshape(num_ebins, -1)
 
 
-dm_20x20 = jnp.load(work_dir + 'dm_1' + suffix).reshape(num_ebins, -1) #the emission expected from annihilation of dark matter; we assume it follows a gNFW morphology with gamma=1.2 and has the energy spectrum of a 30 GeV particle annihilating to b \bar{b} (though we fit every energy bin independently)
-
-bb_20x20 = jnp.load(work_dir + 'dm_14' + suffix).reshape(num_ebins, -1) #the profile of the boxy bulge; this has a power-law energy distribution across bins
-
-x_20x20 = jnp.load(work_dir + 'dm_15' + suffix).reshape(num_ebins, -1) #the profile of the x-shaped bulge; this has a power-law energy distribution across bins
-
-sb_20x20 = jnp.load(work_dir + 'dm_64' + suffix).reshape(num_ebins, -1) #the "boxy bulge plus" = the profile of the boxy bulge augmented with the nuclear stellar bulge and nuclear disk; this has a power-law energy distribution across bins
+dm_20x20 = jnp.load(excesses_dir + 'dm' + suffix).reshape(num_ebins, -1) #the emission expected from annihilation of dark matter; we assume it follows a gNFW morphology with gamma=1.2 and has the energy spectrum of a 30 GeV particle annihilating to b \bar{b} (though we fit every energy bin independently)
+bb_20x20 = jnp.load(excesses_dir + 'bb' + suffix).reshape(num_ebins, -1) #the profile of the boxy bulge; this has a power-law energy distribution across bins
+x_20x20 = jnp.load(excesses_dir + 'x' + suffix).reshape(num_ebins, -1) #the profile of the x-shaped bulge; this has a power-law energy distribution across bins
+sb_20x20 = jnp.load(excesses_dir + 'bbp' + suffix).reshape(num_ebins, -1) #the "boxy bulge plus" = the profile of the boxy bulge augmented with the nuclear stellar bulge and nuclear disk; this has a power-law energy distribution across bins
 
 
-
-mask_20x20 = jnp.load(work_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
-
-
-
-isotropic_error, bubble_error = jnp.load(work_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
 
 
 #jax requires arrays to be of fixed size, so we can't for example write a function that starts with the astrophysical background and adds additional templates later
