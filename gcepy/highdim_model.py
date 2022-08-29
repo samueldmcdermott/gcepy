@@ -10,6 +10,7 @@ the outputs of most interest are:
 from jax import jit
 import jax.numpy as jnp
 import jax.scipy.special as jsc
+import os
 
 
 EPS = jnp.finfo(jnp.float32).eps #smallest machine-precision value
@@ -17,14 +18,17 @@ EMAX = jnp.finfo(jnp.float32).max #largest machine-precision value
 
 num_ebins = 14 #we use 14 energy bins
 
-utils_dir = 'inputs/utils/' #location of your data, mask, etc
-templates_dir = 'inputs/templates_highdim/' #location of your model templates
-excesses_dir = 'inputs/excesses/' #location of your excess templates
+gcepydir = os.getcwd()
+utils_dir = gcepydir + 'inputs/utils/' #location of your data, mask, etc
+templates_dir = gcepydir + 'inputs/templates_highdim/' #location of your model templates
+excesses_dir = gcepydir + 'inputs/excesses/' #location of your excess templates
 
 suffix = '_front_only_14_Ebin_20x20window_normal.npy' #this is convenient in case you have any other labels attached to the models
 
 fermi_front_20x20 = jnp.load(utils_dir + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
 mask_20x20 = jnp.load(utils_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
+
+#the next two lines give the bubbles and isotropic templates
 bubble_20x20 = jnp.load(utils_dir + 'bubble' + suffix).reshape(num_ebins, -1)
 isotropic_20x20 = jnp.load(utils_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
 isotropic_error, bubble_error = jnp.load(utils_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
