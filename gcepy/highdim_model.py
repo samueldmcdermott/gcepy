@@ -69,7 +69,7 @@ def jmodel_masked(theta, bin_no, ex_num=1):
     ----------
     theta: vector
         log10 of the normalizations of the different emission components
-        the first 18 are the astrophysical rings of Pohl et al. https://arxiv.org/abs/2203.11626
+        the first 18 are the astrophysical rings of Pohl et al.
     
     bin_no: int
         the energy bin number
@@ -85,7 +85,7 @@ def jmodel_masked(theta, bin_no, ex_num=1):
     
     Returns
     -------
-    jnp.array
+    vector
         a 160,000-entry vector (including the appropriate mask) that can be compared to data
     """
     if ex_num==1:#DM
@@ -116,7 +116,7 @@ def jdata_masked(bin_no):
     
     Returns
     -------
-    jnp.array
+    vector
         a 160,000-entry vector (including the appropriate mask) to which a model can be compared
     """
     return jnp.asarray(fermi_front_20x20)[bin_no]*jnp.asarray(mask_20x20)[bin_no]
