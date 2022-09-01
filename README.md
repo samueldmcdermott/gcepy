@@ -12,6 +12,6 @@ To install, clone the repository and run ```python setup.py install``` as normal
 
 To load and use the "low-dimensional" model, which will work from any shell after installation do e.g.:
 
-```import gcepy.lowdim_model as lm
+`import gcepy.lowdim_model as lm
 
-lm.jjlnprob(lm.jnp.ones(5))```
+lm.jjlnprob(lm.jnp.ones(5))`
