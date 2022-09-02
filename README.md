@@ -3,9 +3,9 @@ Code for sampling for testing models of the Galactic center excess (GCE).
 
 This code relies on `jax` for all basic definitions, building up to a log-likelihood for the model given the data.
 
-There are separate modules for a "low-dimensional" (astrophysically motivated) 5-parameter model based on 2112.09706 and a "high-dimensional" (ring-based) 19-parameter model based on 2209.abcde.
+There are separate modules for a "low-dimensional" (astrophysically motivated) 5-parameter model based on 2112.09706 and a "high-dimensional" (ring-based) 19-parameter model based on 2209.00006.
 Models and data related to 2112.09706 are included here.
-Model files based on 2209.abcde are available on request.
+Model files based on the ring-based models of 2209.00006 (and Pohl et al.) are available on request.
 
 To install, clone the repository and run ```python setup.py install``` as normal.
 
