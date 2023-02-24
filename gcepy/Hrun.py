@@ -11,7 +11,10 @@ def ptform(x, dim):
     return x*(hm.pmax[:dim]-hm.pmin[:dim])+hm.pmin[:dim]
 jptform = jit(ptform, static_argnums=(1,))
 
-EBIN, EXNUM, PDIM = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
+EBIN, EXNUM = int(sys.argv[1]), int(sys.argv[2])
+
+modparams = [18, 19, 19, 19, 19, 20, 20]
+PDIM = modparams[EXNUM]
 
 sampler_dn = dn.NestedSampler(lambda x: hm.jjlnlike(x, EBIN, ex_num=EXNUM), lambda x: jptform(x, PDIM), PDIM)
 
@@ -29,4 +32,4 @@ lls_nr = jnp.array([hm.jjlnprob(x, bin_no=EBIN, ex_num=EXNUM) for x in samples_n
 
 sampler_dn.results.logl[-1], float(lls_nr.max()), float(-sampler_nr.last_state.potential_energy), int(lls_nr.argmax())
 
-np.savetxt("ebin" + str(EBIN) + "exnum" + str(EXNUM) + "summary.txt", np.array([sampler_dn.results.logz[-1], sampler_dn.results.logl[-1], float(lls_nr.max()), float(-sampler_nr.last_state.potential_energy)]))
+np.savetxt("results/ebin" + str(EBIN) + "exnum" + str(EXNUM) + "Hsummary.txt", np.array([sampler_dn.results.logz[-1], sampler_dn.results.logl[-1], float(lls_nr.max()), float(-sampler_nr.last_state.potential_energy)]))
