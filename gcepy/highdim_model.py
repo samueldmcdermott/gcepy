@@ -84,8 +84,9 @@ def jmodel_masked(theta, bin_no, ex_num=1):
         1 corresponds to DM
         2 is the boxy bulge
         3 is the x-shaped bulge
-        4 is the 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
+        4 is the boxy bulge plus, aka 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
         5 allows both the boxy bulge and the x-shaped bulge to be free independently
+        6 allows both the boxy bulge plus and a DM component to be free independently
     
     Returns
     -------
@@ -98,10 +99,12 @@ def jmodel_masked(theta, bin_no, ex_num=1):
         out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([HI_ring1_20x20[bin_no], HI_ring2_20x20[bin_no], HI_ring3_20x20[bin_no], HI_ring4_20x20[bin_no], H2_ring1_20x20[bin_no], H2_ring2_20x20[bin_no], H2_ring3_20x20[bin_no], H2_ring4_20x20[bin_no], posres_20x20[bin_no],negres_20x20[bin_no], ics_ring1A_20x20[bin_no], ics_ring1B_20x20[bin_no], ics_ring1C_20x20[bin_no], ics_ring2_20x20[bin_no], ics_ring3_20x20[bin_no], ics_ring4_20x20[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bb_20x20[bin_no]]))
     elif ex_num==3:#x-shaped bulge
         out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([HI_ring1_20x20[bin_no], HI_ring2_20x20[bin_no], HI_ring3_20x20[bin_no], HI_ring4_20x20[bin_no], H2_ring1_20x20[bin_no], H2_ring2_20x20[bin_no], H2_ring3_20x20[bin_no], H2_ring4_20x20[bin_no], posres_20x20[bin_no],negres_20x20[bin_no], ics_ring1A_20x20[bin_no], ics_ring1B_20x20[bin_no], ics_ring1C_20x20[bin_no], ics_ring2_20x20[bin_no], ics_ring3_20x20[bin_no], ics_ring4_20x20[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], x_20x20[bin_no]]))
-    elif ex_num==4:#complete stellar bulge; dm_64
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([HI_ring1_20x20[bin_no], HI_ring2_20x20[bin_no], HI_ring3_20x20[bin_no], HI_ring4_20x20[bin_no], H2_ring1_20x20[bin_no], H2_ring2_20x20[bin_no], H2_ring3_20x20[bin_no], H2_ring4_20x20[bin_no], posres_20x20[bin_no],negres_20x20[bin_no], ics_ring1A_20x20[bin_no], ics_ring1B_20x20[bin_no], ics_ring1C_20x20[bin_no], ics_ring2_20x20[bin_no], ics_ring3_20x20[bin_no], ics_ring4_20x20[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], sb_20x20[bin_no]]))
+    elif ex_num==4:#boxy bulge plus, aka complete stellar bulge; dm_64
+        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([HI_ring1_20x20[bin_no], HI_ring2_20x20[bin_no], HI_ring3_20x20[bin_no], HI_ring4_20x20[bin_no], H2_ring1_20x20[bin_no], H2_ring2_20x20[bin_no], H2_ring3_20x20[bin_no], H2_ring4_20x20[bin_no], posres_20x20[bin_no],negres_20x20[bin_no], ics_ring1A_20x20[bin_no], ics_ring1B_20x20[bin_no], ics_ring1C_20x20[bin_no], ics_ring2_20x20[bin_no], ics_ring3_20x20[bin_no], ics_ring4_20x20[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bbp_20x20[bin_no]]))
     elif ex_num==5:#boxy and x-shaped independent
         out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([HI_ring1_20x20[bin_no], HI_ring2_20x20[bin_no], HI_ring3_20x20[bin_no], HI_ring4_20x20[bin_no], H2_ring1_20x20[bin_no], H2_ring2_20x20[bin_no], H2_ring3_20x20[bin_no], H2_ring4_20x20[bin_no], posres_20x20[bin_no],negres_20x20[bin_no], ics_ring1A_20x20[bin_no], ics_ring1B_20x20[bin_no], ics_ring1C_20x20[bin_no], ics_ring2_20x20[bin_no], ics_ring3_20x20[bin_no], ics_ring4_20x20[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bb_20x20[bin_no], x_20x20[bin_no]]))
+    elif ex_num==6:#boxy bulge plus and DM independent
+        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([HI_ring1_20x20[bin_no], HI_ring2_20x20[bin_no], HI_ring3_20x20[bin_no], HI_ring4_20x20[bin_no], H2_ring1_20x20[bin_no], H2_ring2_20x20[bin_no], H2_ring3_20x20[bin_no], H2_ring4_20x20[bin_no], posres_20x20[bin_no],negres_20x20[bin_no], ics_ring1A_20x20[bin_no], ics_ring1B_20x20[bin_no], ics_ring1C_20x20[bin_no], ics_ring2_20x20[bin_no], ics_ring3_20x20[bin_no], ics_ring4_20x20[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bbp_20x20[bin_no], dm_20x20[bin_no]]))
     else:#no excess
         out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([HI_ring1_20x20[bin_no], HI_ring2_20x20[bin_no], HI_ring3_20x20[bin_no], HI_ring4_20x20[bin_no], H2_ring1_20x20[bin_no], H2_ring2_20x20[bin_no], H2_ring3_20x20[bin_no], H2_ring4_20x20[bin_no], posres_20x20[bin_no],negres_20x20[bin_no], ics_ring1A_20x20[bin_no], ics_ring1B_20x20[bin_no], ics_ring1C_20x20[bin_no], ics_ring2_20x20[bin_no], ics_ring3_20x20[bin_no], ics_ring4_20x20[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no]]))
     return out
@@ -147,8 +150,9 @@ def jlnlike(theta, bin_no=0, ex_num=1):
         1 corresponds to DM
         2 is the boxy bulge
         3 is the x-shaped bulge
-        4 is the 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
+        4 is the boxy bulge plus, aka 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
         5 allows both the boxy bulge and the x-shaped bulge to be free independently
+        6 allows both the boxy bulge plus and a DM component to be free independently
     
     Returns
     -------
@@ -169,7 +173,7 @@ jjlnlike = jit(jlnlike, static_argnums=(1,2))
 
 #the priors
 pmin = jnp.asarray([-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.])
-pmax = jnp.asarray([10.,10.,10.,10.,10.,10.,10.,10.,4.,4.,10.,10.,10.,10.,10.,10.,1.,1.,1.,1.])
+pmax = jnp.asarray([10.,10.,10.,10.,10.,10.,10.,10.,6.,4.,10.,10.,10.,10.,10.,10.,1.,1.,1.,1.])
 
 
 #returns the negative of the machine-precision-large number if we find ourselves outside of the prior range
@@ -212,8 +216,9 @@ def jlnprob(theta, bin_no=0, ex_num=1):
         1 corresponds to DM
         2 is the boxy bulge
         3 is the x-shaped bulge
-        4 is the 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
+        4 is the boxy bulge plus, aka 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
         5 allows both the boxy bulge and the x-shaped bulge to be free independently
+        6 allows both the boxy bulge plus and a DM component to be free independently
     
     Returns
     -------

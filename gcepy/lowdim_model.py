@@ -90,9 +90,9 @@ def jmodel_masked(theta, bin_no, ex_num=1):
     elif ex_num==3:#x-shaped bulge
         out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], x_20x20[bin_no]]))
     elif ex_num==4:#boxy bulge plus
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], sb_20x20[bin_no]]))
+        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bbp_20x20[bin_no]]))
     elif ex_num==5:#DM & boxy bulge plus, independently
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], dm_20x20[bin_no], sb_20x20[bin_no]]))
+        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], dm_20x20[bin_no], bbp_20x20[bin_no]]))
     else:#no excess
         out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss_nodm[bin_no] + pi0_nodm[bin_no], ics_nodm[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no]]))
     return out
