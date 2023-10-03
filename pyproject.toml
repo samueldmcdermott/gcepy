@@ -1,21 +1,22 @@
-[tool.poetry]
-name = "gcepy"
-version = "0.2"
-description = "likelihoods and samplers for the Galactic center excess"
-authors = ["Samuel D. McDermott"]
-license = "LICENSE.txt"
-
-[tool.poetry.dependencies]
-python = "^3.9"
-jax = "^0.4"
-dynesty = "^2.0"
-numpy = "^1.26"
-numpyro = "^0.13"
-
-[tool.poetry.dev-dependencies]
-pytest = "^7.3.1"
-pytest-cov = "^4.0.0"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gcepy"
+dynamic = ["version"]
+description = "likelihoods and samplers for the Galactic center excess"
+authors = [{ name = "Samuel D. McDermott", email = "samueldmcdermott@gmail.com" }]
+license = {text="LICENSE.txt"}
+dependencies = [
+  "jax >=0.4",
+  "dynesty >=2.0",
+  "numpy >=1.26",
+  "numpyro >=0.13",
+  ]
+
+[tool.setuptools.packages]
+find = {namespaces = false}
+
+[tool.setuptools.dynamic]
+version = {attr = "gcepy.__version__"}
