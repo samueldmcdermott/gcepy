@@ -1,9 +1,17 @@
 """
 code for sampling for testing models of the Galactic center excess (GCE)
-must import highdim_model and lowdim_model separately
+can use highdim_model and lowdim_model separately, or just interfact with lnlike()
 data for lowdim_model is supplied and will run out of the box
-data for highdim_model must be requested and patched in manually or via appropriate edit to setup.py
+data for highdim_model must be requested and patched in manually or via appropriate edit
 """
 
-# from .lowdim_model import * as lm
-# from .highdim_model import * as hm
+from gcepy.lowdim_model import jjlnprob as _lmlnprob
+from gcepy.highdim_model import jjlnprob as _hmlnprob
+
+def lnlike(model, *args, **kwargs):
+    if model == 'low':
+        return _lmlnprob(*args, **kwargs)
+    elif model == 'high':
+        return _hmlnprob(*args, **kwargs)
+    else:
+        print("choose 'low' or 'high' as the first argument, please")
