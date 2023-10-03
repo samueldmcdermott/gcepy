@@ -11,16 +11,17 @@ Model files based on the ring-based models of [2209.00006](https://arxiv.org/abs
 
 To install, clone the repository and run `python -m pip install .` as normal.
 
-To load and use the "low-dimensional" model (which will work from any shell after installation), you can either do
+To load and use the "low-dimensional" model the preferred method is
 ```
-import gcepy.lowdim_model as lm
-lm.jjlnprob(lm.jnp.ones(5))
+import gcepy
+from jax import numpy as jnp
+gcepy.lnlike('low', jnp.ones(5))
 ```
 or the following is equivalent:
 ```
 import gcepy
 from jax import numpy as jnp
-gcepy.lnlike('low', jnp.ones(5))
+gcepy._lm.jjlnprob(jnp.ones(5))
 ```
 
 See the included ipython notebook for a more involved example, including both `dynesty` and `numpyro` runs.

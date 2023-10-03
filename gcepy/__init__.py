@@ -7,13 +7,16 @@ data for highdim_model must be requested and patched in manually or via appropri
 
 __version__ = "0.2"
 
-from gcepy.lowdim_model import jjlnprob as _lmlnprob
-from gcepy.highdim_model import jjlnprob as _hmlnprob
+import gcepy.lowdim_model as _lm
+del(lowdim_model)
+import gcepy.highdim_model as _hm
+del(highdim_model)
 
 def lnlike(model, *args, **kwargs):
-    if model == 'low':
-        return _lmlnprob(*args, **kwargs)
-    elif model == 'high':
-        return _hmlnprob(*args, **kwargs)
+    if 'l' in model:
+        return _lm.jjlnprob(*args, **kwargs)
+    elif 'h' in model:
+        return _hm.jjlnprob(*args, **kwargs)
     else:
-        print("choose 'low' or 'high' as the first argument, please")
+        print("must include 'l' (for low-dimensional) or 'h' (for high-dimensional) when you specify the first "
+              "argument, please")
