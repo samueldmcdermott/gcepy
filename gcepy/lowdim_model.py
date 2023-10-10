@@ -11,6 +11,8 @@ from jax import jit
 import jax.numpy as jnp
 import jax.scipy.special as jsc
 import os
+import yaml
+
 gcepydir = os.path.dirname(os.path.abspath(__file__))
 
 EPS = jnp.finfo(jnp.float32).eps #smallest machine-precision value
@@ -159,8 +161,9 @@ jjlnlike = jit(jlnlike, static_argnums=(1,2))
 
 
 #the priors
-pmin = jnp.asarray([-2.,-2.,-2.,-2.,-2.,-2.])
-pmax = jnp.asarray([10.,10.,2.,2.,2.,2.])
+with open(os.path.join(gcepydir, "inputs", "priors", "lowdim_priors.yaml"), "r") as f:
+    _ = yaml.safe_load(f)
+    pmin, pmax = jnp.asarray(_['low']), jnp.asarray(_['high'])
 
 
 #returns the negative of the machine-precision-large number if we find ourselves outside of the prior range
