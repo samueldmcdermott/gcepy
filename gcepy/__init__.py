@@ -19,13 +19,39 @@ except FileNotFoundError:
     print("high dimensional model not available")
 
 def lnlike(model, *args, **kwargs):
+    """
+    
+    Parameters
+    ----------
+    model: str
+        must contain "l" to specify the low-dimensional model or "h" to specify the high-dimensional model (if you
+        have that model available). Optionally, can include "s" to specify to the "smooth" prior, which is necessary
+        for mchmc (the uniform priors get smoothed by sigmoids)
+    args:
+        there is one argument, which is the parameter vector for the likelihood
+    kwargs:
+        bin_no (specifying the energy bin) and ex_num (specifying the 'example number' or model (differs for low- vs
+        high-dimensional likelihoods))
+
+    Returns
+        a jax float
+    -------
+
+    """
     if 'l' in model:
-        return _lm.jjlnprob(*args, **kwargs)
+        if "s" in model:
+            return _lm.jjlnprob_smooth(*args, **kwargs)
+        else:
+            return _lm.jjlnprob_hard(*args, **kwargs)
     elif 'h' in model:
         if no_hm:
             print("high dimensional model not available")
             pass
         else:
-            return _hm.jjlnprob(*args, **kwargs)
+            if "s" in model:
+                return _hm.jjlnprob_smooth(*args, **kwargs)
+            else:
+                return _hm.jjlnprob_hard(*args, **kwargs)
     else:
-        print("first argument must include 'l' (for low-dimensional) or 'h' (for high-dimensional), please")
+        print("first argument must include 'l' (for low-dimensional) or 'h' (for high-dimensional), please."
+              "Also include 's' if you want to have smooth priors (necessary for mchmc).")

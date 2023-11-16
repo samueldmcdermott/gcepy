@@ -164,8 +164,11 @@ def jlnlike(theta, bin_no=0, ex_num=1):
     bubble_norm, isotropic_norm = 10**theta[16], 10**theta[17]
     
     e, d = jjmodel_masked(theta, bin_no, ex_num), jjdata_masked(bin_no)
-    mylike = 2*(jnp.sum(e+jsc.gammaln(d+1) - d*jnp.log(e+EPS)))#gammaln takes the log of the gamma function, which itself is the factorial shifted by one; we add a machine-precision small number inside the second log because we are including masked pixels in the sum, in which the expectation is exactly zero, but they get multiplied by exactly zero since the data is also masked, and rather than omit them from the sum (which jax dislikes) we use the fact that 0*log(eps) = 0
-    # additional constraints on bubble and isotropic norms
+    mylike = 2*(jnp.sum(e+jsc.gammaln(d+1) - d*jnp.log(e + EPS)))#gammaln takes the log of the gamma function,
+    # which itself is the factorial shifted by one; we use jsc.xlogy for the second log
+    # because we are including masked pixels in the sum, in which the expectation is not necessarily zero, but which
+    # are multiplied by exactly zero since the data is also masked, and rather than omit them from the sum (which jax
+    # dislikes) we use a special function which is zero when d is zero
     chi2extBub = ((bubble_norm-1.0)/bubble_error[bin_no])**2
     chi2extIso = ((isotropic_norm-1.0)/isotropic_error[bin_no])**2
     
@@ -179,9 +182,10 @@ with open(os.path.join(gcepydir, "inputs", "priors", "highdim_priors.yaml"), "r"
     pmin, pmax = jnp.asarray(_['low']), jnp.asarray(_['high'])
 
 
+#HARD PRIOR -- numpyro prefers this
 #returns the negative of the machine-precision-large number if we find ourselves outside of the prior range
-#this is only necessary for samplers that work in the unconstrained space, which is true of numpyro
-def jlnprior(theta):
+#this is only necessary for a sampler that works in the unconstrained space but doesn't mind sharp bounds
+def jlnprior_hard(theta):
     """
     function that returns a big negative number if you violate the priors
     
@@ -197,10 +201,34 @@ def jlnprior(theta):
         zero if you respect the priors, or a big negative number if you violate the priors
     """
     return -(1-jnp.prod(theta>pmin[:len(theta)])*jnp.prod(theta<pmax[:len(theta)]))*EMAX
-jjlnprior = jit(jlnprior)
+jjlnprior_hard = jit(jlnprior_hard)
 
-#the sum of the prior-enforcing function and the log likelihood
-def jlnprob(theta, bin_no=0, ex_num=1):
+#SMOOTH PRIOR -- mchmc prefers this
+#adds the logs of two sigmoids centered on the low and high edges of the prior range
+#this is only necessary for a sampler that works in the unconstrained space but wants smooth bounds
+def jlnprior_smooth(theta):
+    """
+    function that returns a big negative number if you violate the priors
+    
+    Parameters
+    ----------
+    theta: vector
+        log10 of the normalizations of the different emission components
+        the first 18 are the astrophysical rings of Pohl et al.
+    
+    Returns
+    -------
+    float
+        zero if you respect the priors, or a big negative number if you violate the priors
+    """
+    argL, argR = (theta-(pmin[:len(theta)]-0.5))/0.2, ((pmax[:len(theta)]+0.5)-theta)/0.2
+    # sigL, sigR = 1./(1.+jnp.exp(-argL)), 1./(1.+jnp.exp(-argR))
+    # return jnp.sum(jnp.log(sigL)) + jnp.sum(jnp.log(sigR))
+    return jnp.sum(argL - jsc.xlog1py(1, jnp.exp(argL)) + argR - jsc.xlog1py(1, jnp.exp(argR)))
+jjlnprior_smooth = jit(jlnprior_smooth)
+
+#the sum of the hard prior-enforcing function and the log likelihood
+def jlnprob_hard(theta, bin_no=0, ex_num=1):
     """
     function that returns a log-likelihood that the data is described by a model of the gamma-ray sky
     
@@ -228,11 +256,38 @@ def jlnprob(theta, bin_no=0, ex_num=1):
     float
         the log-likelihood _from the UNconstrained space_ that the data is described by a model of the gamma-ray sky
     """
-    lp = jjlnprior(theta)
-    return lp + jjlnlike(theta, bin_no, ex_num)
-jjlnprob = jit(jlnprob, static_argnums=(1,2))
-# 
-# 
-# def ivrand(rk, dim):
-#     return jax.random.uniform(rk, (dim,))*(pmax[:dim]-pmin[:dim])+pmin[:dim]
-# 
+    return jjlnprior_hard(theta) + jjlnlike(theta, bin_no, ex_num)
+jjlnprob_hard = jit(jlnprob_hard, static_argnums = (1, 2))
+
+
+# the sum of the smooth prior-enforcing function and the log likelihood
+def jlnprob_smooth(theta, bin_no = 0, ex_num = 1):
+    """
+    function that returns a log-likelihood that the data is described by a model of the gamma-ray sky
+
+    Parameters
+    ----------
+    theta: vector
+        log10 of the normalizations of the different emission components
+        the first 18 are the astrophysical rings of Pohl et al.
+
+    bin_no: int
+        the energy bin number
+
+    ex_num: int
+        a way of selecting the excess to add to the astrophysical rings
+        0 corresponds to no excess
+        1 corresponds to DM
+        2 is the boxy bulge
+        3 is the x-shaped bulge
+        4 is the boxy bulge plus, aka 'stellar bulge', boxy plus nuclear with a certain ratio constrained in a certain way, aka dm_64
+        5 allows both the boxy bulge and the x-shaped bulge to be free independently
+        6 allows both the boxy bulge plus and a DM component to be free independently
+
+    Returns
+    -------
+    float
+        the log-likelihood _from the UNconstrained space_ that the data is described by a model of the gamma-ray sky
+    """
+    return jjlnprior_smooth(theta) + jjlnlike(theta, bin_no, ex_num)
+jjlnprob_smooth = jit(jlnprob_smooth, static_argnums = (1, 2))
