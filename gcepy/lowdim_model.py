@@ -86,18 +86,18 @@ def jmodel_masked(theta, bin_no, ex_num=1):
         a 160,000-entry vector (including the appropriate mask) that can be compared to data
     """
     if ex_num==1:#DM
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], dm_20x20[bin_no]]))
+        out = jnp.einsum('i,ij->j', 10**theta, jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], dm_20x20[bin_no]]))
     elif ex_num==2:#boxy bulge
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bb_20x20[bin_no]]))
+        out = jnp.einsum('i,ij->j', 10**theta, jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bb_20x20[bin_no]]))
     elif ex_num==3:#x-shaped bulge
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], x_20x20[bin_no]]))
+        out = jnp.einsum('i,ij->j', 10**theta, jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], x_20x20[bin_no]]))
     elif ex_num==4:#boxy bulge plus
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bbp_20x20[bin_no]]))
+        out = jnp.einsum('i,ij->j', 10**theta, jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], bbp_20x20[bin_no]]))
     elif ex_num==5:#DM & boxy bulge plus, independently
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], dm_20x20[bin_no], bbp_20x20[bin_no]]))
+        out = jnp.einsum('i,ij->j', 10**theta, jnp.array([bremss[bin_no] + pi0[bin_no], ics[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no], dm_20x20[bin_no], bbp_20x20[bin_no]]))
     else:#no excess
-        out = jnp.einsum('i,j,ij->j', 10**theta, mask_20x20[bin_no], jnp.array([bremss_nodm[bin_no] + pi0_nodm[bin_no], ics_nodm[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no]]))
-    return out
+        out = jnp.einsum('i,ij->j', 10**theta, jnp.array([bremss_nodm[bin_no] + pi0_nodm[bin_no], ics_nodm[bin_no], bubble_20x20[bin_no], isotropic_20x20[bin_no]]))
+    return jnp.where(jnp.asarray(mask_20x20)[bin_no]==0, 0, out)
 jjmodel_masked = jit(jmodel_masked, static_argnums=(1,2))
 
 
@@ -116,7 +116,7 @@ def jdata_masked(bin_no):
     jnp.array
         a 160,000-entry vector (including the appropriate mask) to which a model can be compared
     """
-    return jnp.asarray(fermi_front_20x20)[bin_no]*jnp.asarray(mask_20x20)[bin_no]
+    return jnp.where(jnp.asarray(mask_20x20)[bin_no]==0, 0, jnp.asarray(fermi_front_20x20)[bin_no])
 jjdata_masked = jit(jdata_masked, static_argnums=(0,))
 
 
@@ -151,7 +151,7 @@ def jlnlike(theta, bin_no=0, ex_num=1):
     bubble_norm, isotropic_norm = 10**theta[2], 10**theta[3]
     
     e, d = jjmodel_masked(theta, bin_no, ex_num), jjdata_masked(bin_no)
-    mylike = 2*(jnp.sum(e+jsc.gammaln(d+1) - d*jnp.log(e + EPS)))#gammaln takes the log of the gamma function,
+    mylike = 2*(jnp.sum(e+jsc.gammaln(d+1) - jsc.xlogy(d, e+EPS)))#gammaln takes the log of the gamma function,
     # which itself is the factorial shifted by one; we use jsc.xlogy for the second log
     # because we are including masked pixels in the sum, in which the expectation is not necessarily zero, but which
     # are multiplied by exactly zero since the data is also masked, and rather than omit them from the sum (which jax
