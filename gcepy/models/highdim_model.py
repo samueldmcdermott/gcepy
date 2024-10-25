@@ -13,7 +13,7 @@ import jax.scipy.special as jsc
 import os
 import yaml
 
-gcepydir = os.path.dirname(os.path.abspath(__file__))
+gcepydir = os.path.dirname(os.path.abspath(os.path.join(os.path.abspath(__file__), os.pardir))) #this is the path to __init__.py
 
 EPS = jnp.finfo(jnp.float32).eps #smallest machine-precision value
 EMAX = jnp.finfo(jnp.float32).max #largest machine-precision value
@@ -21,44 +21,51 @@ EMAX = jnp.finfo(jnp.float32).max #largest machine-precision value
 num_ebins = 14 #we use 14 energy bins
 
 # gcepydir = os.getcwd()
-utils_dir = gcepydir + '/inputs/utils/' #location of your data, mask, etc
-templates_dir = gcepydir + '/inputs/templates_highdim/' #location of your model templates
-excesses_dir = gcepydir + '/inputs/excesses/' #location of your excess templates
+utils_dir = os.path.join(gcepydir, 'inputs/utils') #location of your data, mask, etc
+templates_dir = os.path.join(gcepydir, 'inputs/templates_highdim') #location of your model templates
+excesses_dir = os.path.join(gcepydir, 'inputs/excesses') #location of your excess templates
 
 suffix = '_front_only_14_Ebin_20x20window_normal.npy' #this is convenient in case you have any other labels attached to the models
 
-fermi_front_20x20 = jnp.load(utils_dir + 'fermi_w009_to_w670' + suffix).reshape(num_ebins, -1) #the data we used
-mask_20x20 = jnp.load(utils_dir + 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy').reshape(num_ebins, -1) #this is the point source _and_ disk mask
+fermi_front_20x20 = jnp.load(os.path.join(utils_dir, 'fermi_w009_to_w670' + suffix)).reshape(num_ebins, -1) #the data
+# we used
+mask_20x20 = jnp.load(os.path.join(utils_dir, 'mask_4FGL-DR2_14_Ebin_20x20window_normal.npy')).reshape(num_ebins,
+                                                                                                      -1) #this is the point source _and_ disk mask
 
 #the next two lines give the bubbles and isotropic templates
-bubble_20x20 = jnp.load(utils_dir + 'bubble' + suffix).reshape(num_ebins, -1)
-isotropic_20x20 = jnp.load(utils_dir + 'isotropic' + suffix).reshape(num_ebins, -1)
-isotropic_error, bubble_error = jnp.load(utils_dir +'external_errors.npy') #the denominators on the isotropic and Bubble normalization terms in the "external chi^2"
+bubble_20x20 = jnp.load(os.path.join(utils_dir, 'bubble' + suffix)).reshape(num_ebins, -1)
+isotropic_20x20 = jnp.load(os.path.join(utils_dir, 'isotropic' + suffix)).reshape(num_ebins, -1)
+isotropic_error, bubble_error = jnp.load(os.path.join(utils_dir, 'external_errors.npy')) #the denominators on the
+# isotropic and Bubble normalization terms in the "external chi^2"
 
 
 #the next 16 lines give the 16 ring-based templates from Pohl et al
-HI_ring1_20x20 = jnp.load(templates_dir + 'HI_ring1' + suffix).reshape(num_ebins, -1)
-HI_ring2_20x20 = jnp.load(templates_dir + 'HI_ring2' + suffix).reshape(num_ebins, -1)
-HI_ring3_20x20 = jnp.load(templates_dir + 'HI_ring3' + suffix).reshape(num_ebins, -1)
-HI_ring4_20x20 = jnp.load(templates_dir + 'HI_ring4' + suffix).reshape(num_ebins, -1)
-H2_ring1_20x20 = jnp.load(templates_dir + 'H2_ring1' + suffix).reshape(num_ebins, -1)
-H2_ring2_20x20 = jnp.load(templates_dir + 'H2_ring2' + suffix).reshape(num_ebins, -1)
-H2_ring3_20x20 = jnp.load(templates_dir + 'H2_ring3' + suffix).reshape(num_ebins, -1)
-H2_ring4_20x20 = jnp.load(templates_dir + 'H2_ring4' + suffix).reshape(num_ebins, -1)
-posres_20x20 = jnp.load(templates_dir + 'posres' + suffix).reshape(num_ebins, -1)
-negres_20x20 = jnp.load(templates_dir + 'negres' + suffix).reshape(num_ebins, -1)
-ics_ring1A_20x20 = jnp.load(templates_dir + 'ics_ring1A' + suffix).reshape(num_ebins, -1)
-ics_ring1B_20x20 = jnp.load(templates_dir + 'ics_ring1B' + suffix).reshape(num_ebins, -1)
-ics_ring1C_20x20 = jnp.load(templates_dir + 'ics_ring1C' + suffix).reshape(num_ebins, -1)
-ics_ring2_20x20 = jnp.load(templates_dir + 'ics_ring2' + suffix).reshape(num_ebins, -1)
-ics_ring3_20x20 = jnp.load(templates_dir + 'ics_ring3' + suffix).reshape(num_ebins, -1)
-ics_ring4_20x20 = jnp.load(templates_dir + 'ics_ring4' + suffix).reshape(num_ebins, -1)
+HI_ring1_20x20 = jnp.load(os.path.join(templates_dir, 'HI_ring1' + suffix)).reshape(num_ebins, -1)
+HI_ring2_20x20 = jnp.load(os.path.join(templates_dir, 'HI_ring2' + suffix)).reshape(num_ebins, -1)
+HI_ring3_20x20 = jnp.load(os.path.join(templates_dir, 'HI_ring3' + suffix)).reshape(num_ebins, -1)
+HI_ring4_20x20 = jnp.load(os.path.join(templates_dir, 'HI_ring4' + suffix)).reshape(num_ebins, -1)
+H2_ring1_20x20 = jnp.load(os.path.join(templates_dir, 'H2_ring1' + suffix)).reshape(num_ebins, -1)
+H2_ring2_20x20 = jnp.load(os.path.join(templates_dir, 'H2_ring2' + suffix)).reshape(num_ebins, -1)
+H2_ring3_20x20 = jnp.load(os.path.join(templates_dir, 'H2_ring3' + suffix)).reshape(num_ebins, -1)
+H2_ring4_20x20 = jnp.load(os.path.join(templates_dir, 'H2_ring4' + suffix)).reshape(num_ebins, -1)
+posres_20x20 = jnp.load(os.path.join(templates_dir, 'posres' + suffix)).reshape(num_ebins, -1)
+negres_20x20 = jnp.load(os.path.join(templates_dir, 'negres' + suffix)).reshape(num_ebins, -1)
+ics_ring1A_20x20 = jnp.load(os.path.join(templates_dir, 'ics_ring1A' + suffix)).reshape(num_ebins, -1)
+ics_ring1B_20x20 = jnp.load(os.path.join(templates_dir, 'ics_ring1B' + suffix)).reshape(num_ebins, -1)
+ics_ring1C_20x20 = jnp.load(os.path.join(templates_dir, 'ics_ring1C' + suffix)).reshape(num_ebins, -1)
+ics_ring2_20x20 = jnp.load(os.path.join(templates_dir, 'ics_ring2' + suffix)).reshape(num_ebins, -1)
+ics_ring3_20x20 = jnp.load(os.path.join(templates_dir, 'ics_ring3' + suffix)).reshape(num_ebins, -1)
+ics_ring4_20x20 = jnp.load(os.path.join(templates_dir, 'ics_ring4' + suffix)).reshape(num_ebins, -1)
 
 
-dm_20x20 = jnp.load(excesses_dir + 'dm' + suffix).reshape(num_ebins, -1) #the emission expected from annihilation of dark matter; we assume it follows a gNFW morphology with gamma=1.2 and has the energy spectrum of a 30 GeV particle annihilating to b \bar{b} (though we fit every energy bin independently)
-bb_20x20 = jnp.load(excesses_dir + 'bb' + suffix).reshape(num_ebins, -1) #the profile of the boxy bulge; this has a power-law energy distribution across bins
-x_20x20 = jnp.load(excesses_dir + 'x' + suffix).reshape(num_ebins, -1) #the profile of the x-shaped bulge; this has a power-law energy distribution across bins
-bbp_20x20 = jnp.load(excesses_dir + 'bbp' + suffix).reshape(num_ebins, -1) #the "boxy bulge plus" = the profile of the boxy bulge augmented with the nuclear stellar bulge and nuclear disk; this has a power-law energy distribution across bins
+dm_20x20 = jnp.load(os.path.join(excesses_dir, 'dm' + suffix)).reshape(num_ebins, -1) #the emission expected from
+# annihilation of dark matter; we assume it follows a gNFW morphology with gamma=1.2 and has the energy spectrum of a 30 GeV particle annihilating to b \bar{b} (though we fit every energy bin independently)
+bb_20x20 = jnp.load(os.path.join(excesses_dir, 'bb' + suffix)).reshape(num_ebins, -1) #the profile of the boxy bulge;
+# this has a power-law energy distribution across bins
+x_20x20 = jnp.load(os.path.join(excesses_dir, 'x' + suffix)).reshape(num_ebins, -1) #the profile of the x-shaped
+# bulge; this has a power-law energy distribution across bins
+bbp_20x20 = jnp.load(os.path.join(excesses_dir, 'bbp' + suffix)).reshape(num_ebins, -1) #the "boxy bulge plus" = the
+# profile of the boxy bulge augmented with the nuclear stellar bulge and nuclear disk; this has a power-law energy distribution across bins
 
 
 
@@ -221,10 +228,11 @@ def jlnprior_smooth(theta):
     float
         zero if you respect the priors, or a big negative number if you violate the priors
     """
-    argL, argR = (theta-(pmin[:len(theta)]-0.5))/0.2, ((pmax[:len(theta)]+0.5)-theta)/0.2
-    # sigL, sigR = 1./(1.+jnp.exp(-argL)), 1./(1.+jnp.exp(-argR))
-    # return jnp.sum(jnp.log(sigL)) + jnp.sum(jnp.log(sigR))
-    return jnp.sum(argL - jsc.xlog1py(1, jnp.exp(argL)) + argR - jsc.xlog1py(1, jnp.exp(argR)))
+    width = 0.3
+    argL, argR = (theta-(pmin[:len(theta)]-3*width))/width, ((pmax[:len(theta)]+3*width)-theta)/width
+    prod = 1. + jnp.exp(-argL) + jnp.exp(-argR) + jnp.exp(-argL - argR)
+    return - jnp.sum(jnp.log(prod))
+    # return jnp.sum(argL - jsc.xlog1py(1, jnp.exp(argL)) + argR - jsc.xlog1py(1, jnp.exp(argR)))
 jjlnprior_smooth = jit(jlnprior_smooth)
 
 #the sum of the hard prior-enforcing function and the log likelihood
